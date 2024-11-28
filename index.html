@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>L'Anyulina</title>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script type="module" src="firebaseConfig.js" defer></script>
+    <script src="script.js" type="module" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+    </div>
+    <div id="content" class="content hidden">
+        <header>
+            <h1>L'Anyulina Achával</h1>
+        </header>
+        <main>
+            <div id="product-list" class="side-by-side"></div>
+        </main>
+        <footer>
+            <p>Ante cualquier inconveniente, avisar por WhatsApp: +541123456789</p>
+        </footer>
+        <div class="bottom-bar">
+            <div class="bottom-bar-container">
+                <div class="bottom-bar-info">
+                    <span id="bottom-total-price" class="total-price">Total: $0.00</span>
+                    <span id="bottom-total-items" class="total-items">Items: 0</span>
+                </div>
+                <button id="view-cart" class="view-cart-button">Ver Carrito</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
