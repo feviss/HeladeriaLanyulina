@@ -5,13 +5,24 @@
     <title>Carrito de Compras</title>
     <link rel="stylesheet" href="carrito.css">
     <script type="module" src="carrito.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div id="cart-details">
         <h1>Carrito de Compras</h1>
         <div id="cart-items"></div>
         <p id="total-price">Total: $0.00</p>
-        <button id="checkout">Finalizar Compra</button>
+        <button id="continue-shopping" class="cart-button">Buscar más productos</button>
+        <button id="clear-cart" class="cart-button">Vaciar Carrito</button>
+    </div>
+    <div class="bottom-bar">
+        <div class="bottom-bar-container">
+            <div class="bottom-bar-info">
+                <span id="checkout-total-price" class="total-price">Total: $0.00</span>
+                <span id="checkout-total-items" class="total-items">Items: 0</span>
+            </div>
+            <button id="checkout" class="view-cart-button">Ir a pagar</button>
+        </div>
     </div>
 </body>
 </html>

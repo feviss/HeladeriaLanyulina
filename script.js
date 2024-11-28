@@ -8,23 +8,49 @@ document.addEventListener("DOMContentLoaded", async function() {
         loadingElement.classList.remove("hidden");
         contentElement.classList.add("hidden");
 
-        const productListElement = document.getElementById("product-list");
+        const categoriesContainer = document.getElementById("categories-container");
         const querySnapshot = await getDocs(collection(db, "productos"));
+
+        const productsByCategory = {};
 
         querySnapshot.forEach((doc) => {
             const productData = doc.data();
-            const productElement = document.createElement('div');
-            productElement.className = 'menu';
-            productElement.setAttribute('data-id', doc.id);
-            productElement.innerHTML = `
-                <h3 class="items">${productData.nombre}</h3>
-                <img class="img" src="${productData.imagen}" alt="${productData.nombre}">
-            `;
-            productElement.addEventListener('click', function() {
-                window.location.href = `producto.html?id=${doc.id}`;
-            });
-            productListElement.appendChild(productElement);
+            const category = productData.tipo || "Otros"; // Usa "Otros" si no hay tipo
+
+            if (!productsByCategory[category]) {
+                productsByCategory[category] = [];
+            }
+            productsByCategory[category].push({ id: doc.id, ...productData });
         });
+
+        for (const [category, products] of Object.entries(productsByCategory)) {
+            const categoryElement = document.createElement('div');
+            categoryElement.className = 'category';
+
+            const categoryTitle = document.createElement('h2');
+            categoryTitle.innerText = category;
+            categoryElement.appendChild(categoryTitle);
+
+            const productListElement = document.createElement('div');
+            productListElement.className = 'product-list';
+
+            products.forEach(product => {
+                const productElement = document.createElement('div');
+                productElement.className = 'menu';
+                productElement.setAttribute('data-id', product.id);
+                productElement.innerHTML = `
+                    <h3 class="items">${product.nombre}</h3>
+                    <img class="img" src="${product.imagen}" alt="${product.nombre}">
+                `;
+                productElement.addEventListener('click', function() {
+                    window.location.href = `producto.html?id=${product.id}`;
+                });
+                productListElement.appendChild(productElement);
+            });
+
+            categoryElement.appendChild(productListElement);
+            categoriesContainer.appendChild(categoryElement);
+        }
 
         // Ocultar el spinner y mostrar el contenido al terminar la carga
         loadingElement.classList.add("hidden");
@@ -34,10 +60,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.log("Error getting documents: ", error);
     }
 
-    document.getElementById("view-cart").addEventListener("click", function() {
-        window.location.href = "carrito.html";
-    });
-
+    const viewCartButton = document.getElementById("view-cart");
     const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     const totalPriceElement = document.getElementById("bottom-total-price");
     const totalItemsElement = document.getElementById("bottom-total-items");
@@ -47,7 +70,16 @@ document.addEventListener("DOMContentLoaded", async function() {
         const totalItems = carrito.reduce((acc, item) => acc + (item.cantidad || 1), 0);
         totalPriceElement.innerText = `Total: $${total.toFixed(2)}`;
         totalItemsElement.innerText = `Items: ${totalItems}`;
+
+        // Deshabilitar el botón si el total es 0
+        viewCartButton.disabled = total === 0;
     }
 
     updateBottomBar();
+
+    viewCartButton.addEventListener("click", function() {
+        if (!viewCartButton.disabled) {
+            window.location.href = "carrito.html";
+        }
+    });
 });

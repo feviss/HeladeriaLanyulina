@@ -23,9 +23,10 @@ document.addEventListener("DOMContentLoaded", async function() {
 
             const maxGustos = productData.maxGustos;
             const flavorsList = document.getElementById("flavors-list");
-            const selectedFlavorsCount = document.getElementById("selected-flavors-count");
+            let totalSelectedFlavors = 0;
 
-            let selectedFlavors = []; // Inicializar aquí para asegurar que siempre exista
+            // Define selectedFlavors fuera del bucle forEach
+            let selectedFlavors = {};
 
             if (maxGustos > 0) {
                 // Obtener gustos desde Firestore
@@ -36,40 +37,85 @@ document.addEventListener("DOMContentLoaded", async function() {
                 });
 
                 availableFlavors.forEach(flavor => {
-                    const flavorCheckbox = document.createElement('input');
-                    flavorCheckbox.type = 'checkbox';
-                    flavorCheckbox.id = flavor;
-                    flavorCheckbox.name = flavor;
-                    flavorCheckbox.value = flavor;
+                    selectedFlavors[flavor] = 0;
 
-                    flavorCheckbox.addEventListener('change', function() {
-                        if (this.checked) {
-                            if (selectedFlavors.length < maxGustos) {
-                                selectedFlavors.push(this.value);
-                            } else {
-                                this.checked = false;
-                                alert(`Solo puedes seleccionar hasta ${maxGustos} gustos.`);
+                    const flavorControl = document.createElement('div');
+                    flavorControl.className = 'flavor-control';
+
+                    const flavorName = document.createElement('span');
+                    flavorName.className = 'flavor-name';
+                    flavorName.innerText = flavor;
+
+                    const controlButtons = document.createElement('div');
+                    controlButtons.className = 'control-buttons';
+
+                    const minusButton = document.createElement('button');
+                    minusButton.className = 'control-button';
+                    minusButton.innerText = '-';
+                    minusButton.disabled = true; // Inicialmente deshabilitado
+
+                    minusButton.addEventListener('click', function() {
+                        if (selectedFlavors[flavor] > 0) {
+                            selectedFlavors[flavor]--;
+                            totalSelectedFlavors--;
+                            updateQuantityDisplay(quantityDisplay, selectedFlavors[flavor]);
+                            plusButton.disabled = false; // Habilita el botón de más si estaba deshabilitado
+                            if (selectedFlavors[flavor] === 0) {
+                                minusButton.disabled = true; // Deshabilita el botón de menos si la cantidad es 0
                             }
-                        } else {
-                            selectedFlavors = selectedFlavors.filter(f => f !== this.value);
+                            if (totalSelectedFlavors < maxGustos) {
+                                disableAllPlusButtons(false); // Habilita todos los botones de más
+                            }
                         }
-                        selectedFlavorsCount.innerText = `Gustos seleccionados: ${selectedFlavors.length}`;
                     });
 
-                    const label = document.createElement('label');
-                    label.htmlFor = flavor;
-                    label.appendChild(document.createTextNode(flavor));
+                    const plusButton = document.createElement('button');
+                    plusButton.className = 'control-button';
+                    plusButton.innerText = '+';
 
-                    flavorsList.appendChild(flavorCheckbox);
-                    flavorsList.appendChild(label);
-                    flavorsList.appendChild(document.createElement('br'));
+                    plusButton.addEventListener('click', function() {
+                        if (totalSelectedFlavors < maxGustos) {
+                            selectedFlavors[flavor]++;
+                            totalSelectedFlavors++;
+                            updateQuantityDisplay(quantityDisplay, selectedFlavors[flavor]);
+                            minusButton.disabled = false; // Habilita el botón de menos
+                            if (totalSelectedFlavors >= maxGustos) {
+                                disableAllPlusButtons(true); // Deshabilita todos los botones de más
+                            }
+                        }
+                    });
+
+                    const quantityDisplay = document.createElement('span');
+                    quantityDisplay.className = 'quantity-display';
+                    quantityDisplay.innerText = selectedFlavors[flavor];
+
+                    controlButtons.appendChild(minusButton);
+                    controlButtons.appendChild(quantityDisplay);
+                    controlButtons.appendChild(plusButton);
+
+                    flavorControl.appendChild(flavorName);
+                    flavorControl.appendChild(controlButtons);
+
+                    flavorsList.appendChild(flavorControl);
                 });
+
+                function disableAllPlusButtons(disable) {
+                    const allPlusButtons = document.querySelectorAll('.control-buttons .control-button:nth-child(3)');
+                    allPlusButtons.forEach(button => {
+                        button.disabled = disable;
+                    });
+                }
             } else {
                 // Ocultar la sección de selección de gustos si maxGustos es 0
                 document.getElementById("flavors-selection").style.display = 'none';
             }
 
             document.getElementById("add-to-cart").addEventListener("click", function() {
+                if (maxGustos > 0 && totalSelectedFlavors === 0) {
+                    alert("Por favor, selecciona al menos un gusto.");
+                    return;
+                }
+            
                 const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
                 carrito.push({
                     id: productId,
@@ -89,3 +135,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.log("Error getting product details: ", error);
     }
 });
+
+function updateQuantityDisplay(displayElement, quantity) {
+    displayElement.innerText = quantity;
+}
