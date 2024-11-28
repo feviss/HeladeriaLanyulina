@@ -5,17 +5,23 @@ document.addEventListener("DOMContentLoaded", async function() {
     try {
         const loadingElement = document.getElementById("loading");
         const contentElement = document.getElementById("content");
+        const categoriesContainer = document.getElementById("categories-container");
+
+        if (!loadingElement || !contentElement || !categoriesContainer) {
+            console.error("Elementos del DOM no encontrados.");
+            return;
+        }
+
         loadingElement.classList.remove("hidden");
         contentElement.classList.add("hidden");
 
-        const categoriesContainer = document.getElementById("categories-container");
         const querySnapshot = await getDocs(collection(db, "productos"));
 
         const productsByCategory = {};
 
         querySnapshot.forEach((doc) => {
             const productData = doc.data();
-            const category = productData.tipo || "Otros"; // Usa "Otros" si no hay tipo
+            const category = productData.tipo || "Otros";
 
             if (!productsByCategory[category]) {
                 productsByCategory[category] = [];
@@ -52,7 +58,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             categoriesContainer.appendChild(categoryElement);
         }
 
-        // Ocultar el spinner y mostrar el contenido al terminar la carga
         loadingElement.classList.add("hidden");
         contentElement.classList.remove("hidden");
 
@@ -61,9 +66,15 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     const viewCartButton = document.getElementById("view-cart");
-    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     const totalPriceElement = document.getElementById("bottom-total-price");
     const totalItemsElement = document.getElementById("bottom-total-items");
+
+    if (!viewCartButton || !totalPriceElement || !totalItemsElement) {
+        console.error("Elementos del DOM no encontrados.");
+        return;
+    }
+
+    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
     function updateBottomBar() {
         const total = carrito.reduce((acc, item) => acc + (item.precio * (item.cantidad || 1)), 0);
@@ -71,7 +82,6 @@ document.addEventListener("DOMContentLoaded", async function() {
         totalPriceElement.innerText = `Total: $${total.toFixed(2)}`;
         totalItemsElement.innerText = `Items: ${totalItems}`;
 
-        // Deshabilitar el botón si el total es 0
         viewCartButton.disabled = total === 0;
     }
 
