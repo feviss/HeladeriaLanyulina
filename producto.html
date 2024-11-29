@@ -1,26 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Detalles del Producto</title>
-    <link rel="stylesheet" href="producto.css">
-    <script type="module" src="producto.js" defer></script>
+<meta charset="UTF-8">
+<title>Detalles del Producto</title>
+<link rel="stylesheet" href="producto.css">
+<script type="module" src="producto.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <div id="product-details">
-        <h1 id="product-name"></h1>
-        <img id="product-image" alt="Imagen del producto">
-        <p id="product-description"></p>
-        <p id="product-price-efectivo"></p>
-        <p id="product-price-transferencia"></p>
-        <p id="product-max-gustos"></p>
-        
-        <div id="flavors-selection">
-            <h3>Selecciona tus gustos:</h3>
-            <div id="flavors-list"></div>
-        </div>
-
-        <button id="add-to-cart">Agregar al Carrito</button>
+<div id="product-details">
+    <h1 id="product-name"></h1>
+    <img id="product-image" alt="Imagen del producto">
+    <p id="product-description"></p>
+    <p id="product-price-efectivo"></p>
+    <p id="product-price-transferencia"></p>
+    <p id="product-max-gustos"></p>
+    
+    <div id="flavors-selection">
+        <h3>Selecciona tus gustos:</h3>
+        <div id="flavors-list"></div>
     </div>
+</div>
+
+<!-- Barra inferior -->
+<div class="bottom-bar">
+    <div class="bottom-bar-container">
+        <div class="bottom-bar-info">
+            <span id="bottom-price-efectivo" class="total-price">Precio Efectivo: $0.00</span>
+            <span id="bottom-price-transferencia" class="total-items">Precio Transferencia: $0.00</span>
+        </div>
+        <button id="add-to-cart" class="view-cart-button">Agregar al Carrito</button>
+    </div>
+</div>
 </body>
 </html>

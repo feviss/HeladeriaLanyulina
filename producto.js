@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", async function() {
             document.getElementById("product-name").innerText = productData.nombre;
             document.getElementById("product-image").src = productData.imagen;
             document.getElementById("product-description").innerText = productData.descripcion;
-            document.getElementById("product-price-efectivo").innerText = `Precio (Efectivo): $${productData.precioEfectivo}`;
-            document.getElementById("product-price-transferencia").innerText = `Precio (Transferencia): $${productData.precioTransferencia}`;
-            document.getElementById("product-max-gustos").innerText = `Máximo de gustos: ${productData.maxGustos}`;
+            document.getElementById("product-price-efectivo").innerText = `$${productData.precioEfectivo}`;
+            document.getElementById("product-price-transferencia").innerText = `$${productData.precioTransferencia}`;
+            document.getElementById("product-max-gustos").innerText = `${productData.maxGustos}`;
 
             const maxGustos = productData.maxGustos;
             const flavorsList = document.getElementById("flavors-list");
@@ -110,6 +110,12 @@ document.addEventListener("DOMContentLoaded", async function() {
                 document.getElementById("flavors-selection").style.display = 'none';
             }
 
+            // Actualizar los precios en la barra inferior
+            const bottomPriceEfectivoElement = document.getElementById("bottom-price-efectivo");
+            const bottomPriceTransferenciaElement = document.getElementById("bottom-price-transferencia");
+            bottomPriceEfectivoElement.innerText = `Precio Efectivo: $${productData.precioEfectivo}`;
+            bottomPriceTransferenciaElement.innerText = `Precio Transferencia: $${productData.precioTransferencia}`;
+
             document.getElementById("add-to-cart").addEventListener("click", function() {
                 if (maxGustos > 0 && totalSelectedFlavors === 0) {
                     alert("Por favor, selecciona al menos un gusto.");
@@ -120,8 +126,9 @@ document.addEventListener("DOMContentLoaded", async function() {
                 carrito.push({
                     id: productId,
                     nombre: productData.nombre,
-                    precio: productData.precioEfectivo, // Puedes cambiar según el método de pago seleccionado
-                    gustos: selectedFlavors // Utiliza la lista de gustos seleccionados
+                    precioEfectivo: productData.precioEfectivo,
+                    precioTransferencia: productData.precioTransferencia,
+                    gustos: selectedFlavors
                 });
                 localStorage.setItem("carrito", JSON.stringify(carrito));
                 console.log("Producto agregado al carrito:", carrito); // Log para verificar
