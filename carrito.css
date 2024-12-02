@@ -25,11 +25,11 @@ body {
     .cart-item {
     border-bottom: 1px solid #ddd;
     padding: 10px 0;
-    font-size: 1.4rem; /* Reducir tamaño de fuente */
+    font-size: 1.4rem;
     }
     
     #total-price {
-    font-size: 1.6rem; /* Reducir tamaño de fuente */
+    font-size: 1.6rem;
     font-weight: bold;
     text-align: right;
     margin-top: 20px;
@@ -42,9 +42,9 @@ body {
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 12px 25px; /* Reducir padding */
+    padding: 12px 25px;
     cursor: pointer;
-    font-size: 1.2rem; /* Reducir tamaño de fuente */
+    font-size: 1.2rem;
     margin-top: 20px;
     transition: background-color 0.3s, transform 0.2s;
     }
@@ -87,9 +87,9 @@ body {
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 10px 20px; /* Reducir padding */
+    padding: 10px 20px;
     cursor: pointer;
-    font-size: 1.2rem; /* Reducir tamaño de fuente */
+    font-size: 1.2rem;
     width: 80%;
     margin: 10px 0;
     margin-bottom: 20px;
@@ -114,7 +114,7 @@ body {
     
     .total-price, .total-items {
     font-weight: bold;
-    font-size: 1rem; /* Ajustar tamaño de fuente */
+    font-size: 1rem;
     margin: 0 10px;
     text-align: center;
     }
@@ -127,6 +127,7 @@ body {
     
     #cart-details {
         padding: 15px;
+        padding-bottom: 200px; /* Aumentar para dejar más espacio en móviles */
     }
     
     h1 {
