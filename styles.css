@@ -222,16 +222,20 @@ html, body {
     .flavor-control {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between; /* Espacio entre el contenedor y el checkbox */
     margin-bottom: 10px;
     padding: 10px;
     background-color: #f8e1ff;
     border-radius: 5px;
     }
     
-    .flavor-name,
-    .opcional-item label {
-    flex: 1;
+    .nombre-precio-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Ocupar el espacio disponible */
+    }
+    
+    .flavor-name {
     font-weight: bold;
     color: #333;
     font-size: 1.2rem;
@@ -246,10 +250,6 @@ html, body {
     cursor: pointer;
     transition: background-color 0.3s;
     margin-left: 10px; /* Mover el margen al checkbox */
-    }
-    
-    .opcional-item input[type="checkbox"]:checked {
-    background-color: #d565d3;
     }
     
     .control-buttons {

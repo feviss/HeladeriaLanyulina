@@ -191,50 +191,91 @@ function openModal(product) {
             opcionalesList.className = 'opcionales-list';
     
             getDocs(collection(db, "opcionales")).then(opcionalesSnapshot => {
+                const opcionalesByDepto = {}; // Agrupar opcionales por departamento
+                
                 opcionalesSnapshot.forEach((doc) => {
                     const opcionalData = doc.data();
-                    const opcionalElement = document.createElement('div');
-                    opcionalElement.className = 'flavor-control'; // Usar la misma clase que los gustos
+                    const depto = opcionalData.depto || "Otros"; // Departamento por defecto si no existe
                 
-                    let precioTexto = '$0';
-                    if (opcionalData.precioEfectivo !== 0 || opcionalData.precioTransferencia !== 0) {
+                    if (!opcionalesByDepto[depto]) {
+                        opcionalesByDepto[depto] = [];
+                    }
+                    opcionalesByDepto[depto].push(opcionalData);
+                });
+                
+                // Iterar por cada departamento
+                for (const depto in opcionalesByDepto) {
+                    const opcionales = opcionalesByDepto[depto];
+                
+                    // Crear el encabezado del departamento
+                    const deptoHeader = document.createElement('h4');
+                    deptoHeader.innerText = depto;
+                    flavorsList.appendChild(deptoHeader);
+                
+                    // Crear la lista de opcionales para el departamento
+                    const opcionalesList = document.createElement('div');
+                    opcionalesList.className = 'opcionales-list';
+                
+                    opcionales.forEach(opcionalData => {
+                        const opcionalElement = document.createElement('div');
+                        opcionalElement.className = 'flavor-control';
+                        
+                        // Contenedor para nombre y precio
+                        const nombrePrecioContainer = document.createElement('div');
+                        nombrePrecioContainer.className = 'nombre-precio-container'; // Nueva clase
+                        nombrePrecioContainer.style.display = 'flex'; // Usar flexbox
+                        nombrePrecioContainer.style.alignItems = 'center'; // Alinear verticalmente
+                        
+                        const nombreSpan = document.createElement('span');
+                        nombreSpan.className = 'flavor-name';
+                        nombreSpan.innerText = opcionalData.nombre;
+                
+                        let precioTexto = '$0';
+                        if (opcionalData.precioEfectivo !== 0 || opcionalData.precioTransferencia !== 0) {
                         if (opcionalData.precioEfectivo === opcionalData.precioTransferencia) {
                             precioTexto = `$${opcionalData.precioEfectivo}`;
                         } else {
-                            precioTexto = `Ef: $${opcionalData.precioEfectivo}, Tr: $${opcionalData.precioTransferencia}`;
+                            precioTexto = `Ef: $${opcionalData.precioEfectivo}<br>Tr: $${opcionalData.precioTransferencia}`; // Agregar <br>
                         }
-                    }
-                
-                    const label = document.createElement('label');
-                    label.htmlFor = `opcional-${opcionalData.nombre}`;
-                    label.innerText = `${opcionalData.nombre} ${precioTexto}`;
-                
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.id = `opcional-${opcionalData.nombre}`;
-                    checkbox.value = opcionalData.nombre;
-                    checkbox.style.marginLeft = '10px'; // Agregar margen izquierdo
-                
-                    opcionalElement.appendChild(label); // Etiqueta primero
-                    opcionalElement.appendChild(checkbox); // Checkbox después
-                    opcionalesList.appendChild(opcionalElement);
-                
-                    checkbox.addEventListener('change', () => {
-                        if (checkbox.checked) {
-                            selectedOpcionales[opcionalData.nombre] = {
-                                nombre: opcionalData.nombre,
-                                precioEfectivo: opcionalData.precioEfectivo,
-                                precioTransferencia: opcionalData.precioTransferencia
-                            };
-                        } else {
-                            delete selectedOpcionales[opcionalData.nombre];
                         }
+                
+                        const precioSpan = document.createElement('span');
+                        precioSpan.className = 'flavor-name';
+                        precioSpan.innerHTML = precioTexto;
+                        precioSpan.style.marginLeft = '10px';
+                        
+                        // Agregar nombre y precio al contenedor
+                        nombrePrecioContainer.appendChild(nombreSpan);
+                        nombrePrecioContainer.appendChild(precioSpan);
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `opcional-${opcionalData.nombre}`;
+                        checkbox.value = opcionalData.nombre;
+                        checkbox.style.marginLeft = '10px';
+                        
+                        // Agregar el contenedor y el checkbox al elemento opcional
+                        opcionalElement.appendChild(nombrePrecioContainer);
+                        opcionalElement.appendChild(checkbox);
+                        
+                        opcionalesList.appendChild(opcionalElement);
+                
+                        checkbox.addEventListener('change', () => {
+                            if (checkbox.checked) {
+                                selectedOpcionales[opcionalData.nombre] = {
+                                    nombre: opcionalData.nombre,
+                                    precioEfectivo: opcionalData.precioEfectivo,
+                                    precioTransferencia: opcionalData.precioTransferencia
+                                };
+                            } else {
+                                delete selectedOpcionales[opcionalData.nombre];
+                            }
+                        });
                     });
-                });
-                });
-    
-            flavorsList.appendChild(opcionalesHeader); // Agregar encabezado de opcionales
-            flavorsList.appendChild(opcionalesList); // Agregar lista de opcionales
+                
+                    flavorsList.appendChild(opcionalesList);
+                }
+            });
         });
     } else {
         document.getElementById("flavors-selection").style.display = 'none';
