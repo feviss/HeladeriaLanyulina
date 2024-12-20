@@ -1,37 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>L'Anyulina</title>
-    <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <script type="module" src="firebaseConfig.js" defer></script>
-    <script src="script.js" type="module" defer></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Anyulina</title>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="styles.css">
+<script type="module" src="firebaseConfig.js" defer></script>
+<script src="script.js" type="module" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <div id="loading" class="loading">
-        <div class="spinner"></div>
-    </div>
-    <div id="content" class="content hidden">
-        <header>
-            <h1>L'Anyulina Achával</h1>
-        </header>
-        <main>
-            <div id="categories-container"></div>
-        </main>
-        <footer>
-            <p>Ante cualquier inconveniente, avisar por WhatsApp: +541123456789</p>
-        </footer>
-        <div class="bottom-bar">
-            <div class="bottom-bar-container">
-                <div class="bottom-bar-info">
-                    <span id="bottom-total-efectivo" class="total-price">Total Efectivo: $0.00</span>
-                    <span id="bottom-total-transferencia" class="total-items">Total Transferencia: $0.00</span>
-                </div>
-                <button id="view-cart" class="view-cart-button">Ver Carrito</button>
+<div id="loading" class="loading">
+    <div class="spinner"></div>
+</div>
+<div id="content" class="content hidden">
+    <header>
+        <h1>L'Anyulina Achával</h1>
+    </header>
+    <main>
+        <div id="categories-container"></div>
+    </main>
+    <footer>
+        <p>Ante cualquier inconveniente, avisar por WhatsApp: +541123456789</p>
+    </footer>
+    <div class="bottom-bar">
+        <div class="bottom-bar-container">
+            <div class="bottom-bar-info">
+                <span id="bottom-total-efectivo" class="total-price">Total Efectivo: $0.00</span>
+                <span id="bottom-total-transferencia" class="total-items">Total Transferencia: $0.00</span>
             </div>
+            <button id="view-cart" class="view-cart-button">Ver Carrito</button>
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div id="product-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2 id="modal-product-name"></h2>
+        <img id="modal-product-image" alt="Imagen del producto">
+        <p id="modal-product-description"></p>
+        <div id="flavors-selection">
+            <h3>Selecciona tus gustos:</h3>
+            <div id="flavors-list"></div>
+        </div>
+        <button id="add-to-cart-modal" class="view-cart-button">Agregar al Carrito</button>
+    </div>
+</div>
 </body>
 </html>

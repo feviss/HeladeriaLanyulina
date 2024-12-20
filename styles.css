@@ -24,7 +24,7 @@ html, body {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    padding-bottom: 140px; /* Añadir espacio para la barra fija */
+    padding-bottom: 140px;
     }
     
     .category {
@@ -55,13 +55,20 @@ html, body {
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
-    flex: 1 1 calc(33.333% - 40px); /* Ajusta el ancho a un tercio menos el espacio del gap */
+    flex: 1 1 calc(33.333% - 40px);
     max-width: 300px;
     box-sizing: border-box;
     }
     
     .menu:hover {
     transform: scale(1.05);
+    }
+    
+    .menu p {
+    font-weight: bold;
+    color: #333;
+    margin: 5px 0;
+    font-size: 1.4rem;
     }
     
     .img {
@@ -150,6 +157,147 @@ html, body {
     text-align: center;
     }
     
+    .modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    }
+    
+    #modal-product-name {
+    font-size: 2.5rem;
+    color: #d565d3;
+    margin-bottom: 20px;
+    }
+    
+    #modal-product-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    object-fit: cover;
+    }
+    
+    #modal-price-info p,
+    #modal-product-description {
+    font-size: 1.4rem; /* Tamaño de fuente reducido */
+    margin: 10px 0;
+    color: #555;
+    line-height: 1.5;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #f8e1ff;
+    font-weight: bold;
+    font-style: normal;
+    }
+    
+    #flavors-selection {
+    margin-top: 35px;
+    text-align: left;
+    }
+    
+    #flavors-selection h3 {
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 10px;
+    }
+    
+    .flavor-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f8e1ff;
+    border-radius: 5px;
+    }
+    
+    .flavor-name,
+    .opcional-item label {
+    flex: 1;
+    font-weight: bold;
+    color: #333;
+    font-size: 1.2rem;
+    }
+    
+    .opcional-item input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d565d3;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 10px; /* Mover el margen al checkbox */
+    }
+    
+    .opcional-item input[type="checkbox"]:checked {
+    background-color: #d565d3;
+    }
+    
+    .control-buttons {
+    display: flex;
+    align-items: center;
+    }
+    
+    .control-button {
+    background-color: #d565d3;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 40px;
+    text-align: center;
+    margin: 0 5px;
+    transition: background-color 0.3s;
+    }
+    
+    .control-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    }
+    
+    .quantity-display {
+    width: 40px;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #333;
+    }
+    
+    .close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    }
+    
+    .close-button:hover,
+    .close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+    }
+    
     /* Media query para pantallas pequeñas */
     @media (max-width: 768px) {
     .product-list {
@@ -157,7 +305,7 @@ html, body {
     }
     
     .menu {
-        flex: 1 1 100%; /* Ajusta el ancho al 100% para una sola columna */
+        flex: 1 1 100%;
         max-width: 90%;
     }
     

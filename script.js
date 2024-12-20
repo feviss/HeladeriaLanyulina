@@ -19,18 +19,16 @@ try {
 
         if (!productsByCategory[category]) {
             productsByCategory[category] = {
-                ordenDepartamento: productData.ordenDepartamento || 999, // Asigna un valor alto por defecto si no está definido
+                ordenDepartamento: productData.ordenDepartamento || 999,
                 products: []
             };
         }
         productsByCategory[category].products.push({ id: doc.id, ...productData });
     });
 
-    // Ordenar las categorías por 'ordenDepartamento'
     const sortedCategories = Object.entries(productsByCategory).sort((a, b) => a[1].ordenDepartamento - b[1].ordenDepartamento);
 
     for (const [category, data] of sortedCategories) {
-        // Ordenar los productos dentro de cada categoría por el campo 'orden'
         data.products.sort((a, b) => a.orden - b.orden);
 
         const categoryElement = document.createElement('div');
@@ -50,18 +48,19 @@ try {
             productElement.innerHTML = `
                 <h3 class="items">${product.nombre}</h3>
                 <img class="img" src="${product.imagen}" alt="${product.nombre}">
+                <p>Precio Efectivo: $${product.precioEfectivo.toFixed(2)}</p>
+                <p>Precio Transferencia: $${product.precioTransferencia.toFixed(2)}</p>
             `;
             productElement.addEventListener('click', function() {
-                window.location.href = `producto.html?id=${product.id}`;
+                openModal(product);
             });
             productListElement.appendChild(productElement);
-        });
+            });
 
         categoryElement.appendChild(productListElement);
         categoriesContainer.appendChild(categoryElement);
     }
 
-    // Ocultar el spinner y mostrar el contenido al terminar la carga
     loadingElement.classList.add("hidden");
     contentElement.classList.remove("hidden");
 
@@ -81,7 +80,6 @@ function updateBottomBar() {
     totalEfectivoElement.innerText = `Total Efectivo: $${totalEfectivo.toFixed(2)}`;
     totalTransferenciaElement.innerText = `Total Transferencia: $${totalTransferencia.toFixed(2)}`;
 
-    // Deshabilitar el botón si ambos totales son 0
     viewCartButton.disabled = totalEfectivo === 0 && totalTransferencia === 0;
 }
 
@@ -92,4 +90,193 @@ viewCartButton.addEventListener("click", function() {
         window.location.href = "carrito.html";
     }
 });
+
+function openModal(product) {
+    const modal = document.getElementById("product-modal");
+    document.getElementById("modal-product-name").innerText = product.nombre;
+    document.getElementById("modal-product-image").src = product.imagen;
+    document.getElementById("modal-product-description").innerText = product.descripcion;
+    
+    const modalContent = document.querySelector(".modal-content");
+    const existingPriceInfo = document.getElementById("modal-price-info");
+    if (existingPriceInfo) {
+        existingPriceInfo.remove();
+    }
+    
+    const priceInfo = document.createElement('div');
+    priceInfo.id = "modal-price-info";
+    priceInfo.innerHTML = `
+        <p>Precio Efectivo: $${product.precioEfectivo.toFixed(2)}</p>
+        <p>Precio Transferencia: $${product.precioTransferencia.toFixed(2)}</p>
+        ${product.maxGustos > 0 ? `<p>Gustos Máximos: ${product.maxGustos}</p>` : ''}
+    `;
+    modalContent.insertBefore(priceInfo, document.getElementById("modal-product-description"));
+    
+    const flavorsList = document.getElementById("flavors-list");
+    flavorsList.innerHTML = '';
+    
+    let selectedFlavors = {};
+    let selectedOpcionales = {};
+    
+    if (product.maxGustos > 0) {
+        getDocs(collection(db, "gustos")).then(flavorsSnapshot => {
+            let availableFlavors = [];
+            flavorsSnapshot.forEach((doc) => {
+                availableFlavors.push(doc.data().nombre);
+            });
+    
+            availableFlavors.forEach(flavor => {
+                selectedFlavors[flavor] = 0;
+    
+                const flavorControl = document.createElement('div');
+                flavorControl.className = 'flavor-control';
+    
+                const flavorName = document.createElement('span');
+                flavorName.className = 'flavor-name';
+                flavorName.innerText = flavor;
+    
+                const controlButtons = document.createElement('div');
+                controlButtons.className = 'control-buttons';
+    
+                const minusButton = document.createElement('button');
+                minusButton.className = 'control-button';
+                minusButton.innerText = '-';
+                minusButton.disabled = true;
+    
+                const plusButton = document.createElement('button');
+                plusButton.className = 'control-button';
+                plusButton.innerText = '+';
+    
+                const quantityDisplay = document.createElement('span');
+                quantityDisplay.className = 'quantity-display';
+                quantityDisplay.innerText = '0';
+    
+                minusButton.addEventListener('click', function() {
+                    if (selectedFlavors[flavor] > 0) {
+                        selectedFlavors[flavor]--;
+                        quantityDisplay.innerText = selectedFlavors[flavor];
+                        plusButton.disabled = false;
+                        if (selectedFlavors[flavor] === 0) {
+                            minusButton.disabled = true;
+                        }
+                        updatePlusButtons();
+                    }
+                });
+    
+                plusButton.addEventListener('click', function() {
+                    const totalSelected = Object.values(selectedFlavors).reduce((a, b) => a + b, 0);
+                    if (totalSelected < product.maxGustos) {
+                        selectedFlavors[flavor]++;
+                        quantityDisplay.innerText = selectedFlavors[flavor];
+                        minusButton.disabled = false;
+                        updatePlusButtons();
+                    }
+                });
+    
+                controlButtons.appendChild(minusButton);
+                controlButtons.appendChild(quantityDisplay);
+                controlButtons.appendChild(plusButton);
+    
+                flavorControl.appendChild(flavorName);
+                flavorControl.appendChild(controlButtons);
+    
+                flavorsList.appendChild(flavorControl);
+            });
+    
+            // Opcionales (después de los gustos)
+            const opcionalesHeader = document.createElement('h3');
+            opcionalesHeader.innerText = 'Opcionales';
+    
+            const opcionalesList = document.createElement('div');
+            opcionalesList.className = 'opcionales-list';
+    
+            getDocs(collection(db, "opcionales")).then(opcionalesSnapshot => {
+                opcionalesSnapshot.forEach((doc) => {
+                    const opcionalData = doc.data();
+                    const opcionalElement = document.createElement('div');
+                    opcionalElement.className = 'flavor-control'; // Usar la misma clase que los gustos
+                
+                    let precioTexto = '$0';
+                    if (opcionalData.precioEfectivo !== 0 || opcionalData.precioTransferencia !== 0) {
+                        if (opcionalData.precioEfectivo === opcionalData.precioTransferencia) {
+                            precioTexto = `$${opcionalData.precioEfectivo}`;
+                        } else {
+                            precioTexto = `Ef: $${opcionalData.precioEfectivo}, Tr: $${opcionalData.precioTransferencia}`;
+                        }
+                    }
+                
+                    const label = document.createElement('label');
+                    label.htmlFor = `opcional-${opcionalData.nombre}`;
+                    label.innerText = `${opcionalData.nombre} ${precioTexto}`;
+                
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `opcional-${opcionalData.nombre}`;
+                    checkbox.value = opcionalData.nombre;
+                    checkbox.style.marginLeft = '10px'; // Agregar margen izquierdo
+                
+                    opcionalElement.appendChild(label); // Etiqueta primero
+                    opcionalElement.appendChild(checkbox); // Checkbox después
+                    opcionalesList.appendChild(opcionalElement);
+                
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            selectedOpcionales[opcionalData.nombre] = {
+                                nombre: opcionalData.nombre,
+                                precioEfectivo: opcionalData.precioEfectivo,
+                                precioTransferencia: opcionalData.precioTransferencia
+                            };
+                        } else {
+                            delete selectedOpcionales[opcionalData.nombre];
+                        }
+                    });
+                });
+                });
+    
+            flavorsList.appendChild(opcionalesHeader); // Agregar encabezado de opcionales
+            flavorsList.appendChild(opcionalesList); // Agregar lista de opcionales
+        });
+    } else {
+        document.getElementById("flavors-selection").style.display = 'none';
+    }
+    
+    const addToCartButton = document.getElementById("add-to-cart-modal");
+    addToCartButton.onclick = function() {
+        const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        carrito.push({
+            id: product.id,
+            nombre: product.nombre,
+            precioEfectivo: product.precioEfectivo,
+            precioTransferencia: product.precioTransferencia,
+            cantidad: 1,
+            gustos: selectedFlavors,
+            opcionales: selectedOpcionales // Agregar opcionales al carrito
+        });
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        modal.style.display = "none";
+        location.reload();
+    };
+    
+    modal.style.display = "block";
+    
+    const closeButton = document.querySelector(".close-button");
+    closeButton.onclick = function() {
+        modal.style.display = "none";
+    };
+    
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+    
+    function updatePlusButtons() {
+        const totalSelected = Object.values(selectedFlavors).reduce((a, b) => a + b, 0);
+        const allPlusButtons = document.querySelectorAll('.control-button:nth-child(3)');
+        allPlusButtons.forEach(button => {
+            button.disabled = totalSelected >= product.maxGustos;
+            button.style.backgroundColor = button.disabled ? '#ccc' : '#d565d3';
+        });
+    }
+    }
 });
