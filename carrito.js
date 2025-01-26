@@ -13,16 +13,15 @@ document.addEventListener("DOMContentLoaded", function() {
         const itemElement = document.createElement('div');
         itemElement.className = 'cart-item';
         
-        // Verificar si gustos es un objeto y convertirlo a un array de strings
         const gustosArray = Object.entries(item.gustos)
-            .filter(([key, value]) => value > 0) // Filtrar solo los gustos seleccionados
-            .map(([key, value]) => `${key} (${value})`);
-    
+            .filter(([key, value]) => value > 0)
+            .map(([key, value]) => `<li class="gusto-item">${key} (${value})</li>`); // Usar <li> para la lista
+        
         itemElement.innerHTML = `
             <h3>${item.nombre}</h3>
             <p>Precio Efectivo: $${item.precioEfectivo}</p>
             <p>Precio Transferencia: $${item.precioTransferencia}</p>
-            <p>Gustos: ${gustosArray.join(', ')}</p>
+            <ul class="gustos-list">${gustosArray.join('')}</ul>  </ul>
         `;
         cartItemsElement.appendChild(itemElement);
     

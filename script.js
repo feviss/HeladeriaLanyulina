@@ -117,6 +117,7 @@ function openModal(product) {
     
     let selectedFlavors = {};
     let selectedOpcionales = {};
+    let totalSelectedOpcionales = 0; // Contador de opcionales seleccionados
     
     if (product.maxGustos > 0) {
         getDocs(collection(db, "gustos")).then(flavorsSnapshot => {
@@ -220,58 +221,70 @@ function openModal(product) {
                         const opcionalElement = document.createElement('div');
                         opcionalElement.className = 'flavor-control';
                         
-                        // Contenedor para nombre y precio
-                        const nombrePrecioContainer = document.createElement('div');
-                        nombrePrecioContainer.className = 'nombre-precio-container'; // Nueva clase
-                        nombrePrecioContainer.style.display = 'flex'; // Usar flexbox
-                        nombrePrecioContainer.style.alignItems = 'center'; // Alinear verticalmente
-                        
                         const nombreSpan = document.createElement('span');
                         nombreSpan.className = 'flavor-name';
                         nombreSpan.innerText = opcionalData.nombre;
-                
+                        
                         let precioTexto = '$0';
                         if (opcionalData.precioEfectivo !== 0 || opcionalData.precioTransferencia !== 0) {
-                        if (opcionalData.precioEfectivo === opcionalData.precioTransferencia) {
-                            precioTexto = `$${opcionalData.precioEfectivo}`;
-                        } else {
-                            precioTexto = `Ef: $${opcionalData.precioEfectivo}<br>Tr: $${opcionalData.precioTransferencia}`; // Agregar <br>
+                            if (opcionalData.precioEfectivo === opcionalData.precioTransferencia) {
+                                precioTexto = `$${opcionalData.precioEfectivo}`;
+                            } else {
+                                precioTexto = `Ef: $${opcionalData.precioEfectivo}<br>Tr: $${opcionalData.precioTransferencia}`;
+                            }
                         }
-                        }
-                
                         const precioSpan = document.createElement('span');
                         precioSpan.className = 'flavor-name';
                         precioSpan.innerHTML = precioTexto;
                         precioSpan.style.marginLeft = '10px';
                         
-                        // Agregar nombre y precio al contenedor
-                        nombrePrecioContainer.appendChild(nombreSpan);
-                        nombrePrecioContainer.appendChild(precioSpan);
+                        // Botones de control para opcionales
+                        const controlButtons = document.createElement('div');
+                        controlButtons.className = 'control-buttons';
                         
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.id = `opcional-${opcionalData.nombre}`;
-                        checkbox.value = opcionalData.nombre;
-                        checkbox.style.marginLeft = '10px';
+                        const minusButton = document.createElement('button');
+                        minusButton.className = 'control-button';
+                        minusButton.innerText = '-';
+                        minusButton.disabled = true;
                         
-                        // Agregar el contenedor y el checkbox al elemento opcional
-                        opcionalElement.appendChild(nombrePrecioContainer);
-                        opcionalElement.appendChild(checkbox);
+                        const plusButton = document.createElement('button');
+                        plusButton.className = 'control-button';
+                        plusButton.innerText = '+';
                         
-                        opcionalesList.appendChild(opcionalElement);
-                
-                        checkbox.addEventListener('change', () => {
-                            if (checkbox.checked) {
-                                selectedOpcionales[opcionalData.nombre] = {
-                                    nombre: opcionalData.nombre,
-                                    precioEfectivo: opcionalData.precioEfectivo,
-                                    precioTransferencia: opcionalData.precioTransferencia
-                                };
-                            } else {
-                                delete selectedOpcionales[opcionalData.nombre];
+                        const quantityDisplay = document.createElement('span');
+                        quantityDisplay.className = 'quantity-display';
+                        quantityDisplay.innerText = '0';
+                        
+                        minusButton.addEventListener('click', function() {
+                            if (selectedOpcionales[opcionalData.nombre] > 0) {
+                                selectedOpcionales[opcionalData.nombre]--;
+                                quantityDisplay.innerText = selectedOpcionales[opcionalData.nombre];
+                                minusButton.disabled = selectedOpcionales[opcionalData.nombre] === 0;
+                                plusButton.disabled = false; // Habilitar el botón "+"
                             }
                         });
-                    });
+                        
+                        plusButton.addEventListener('click', function() {
+                            if (selectedOpcionales[opcionalData.nombre] < 1) { // Máximo 1 opcional
+                                selectedOpcionales[opcionalData.nombre]++;
+                                quantityDisplay.innerText = selectedOpcionales[opcionalData.nombre];
+                                minusButton.disabled = false;
+                                plusButton.disabled = true; // Deshabilitar el botón "+"
+                            }
+                        });
+                        
+                        controlButtons.appendChild(minusButton);
+                        controlButtons.appendChild(quantityDisplay);
+                        controlButtons.appendChild(plusButton);
+                        
+                        opcionalElement.appendChild(nombreSpan);
+                        opcionalElement.appendChild(precioSpan);
+                        opcionalElement.appendChild(controlButtons); // Agregar botones de control
+                        opcionalesList.appendChild(opcionalElement);
+                        
+                        // Inicializar contador de opcionales
+                        selectedOpcionales[opcionalData.nombre] = 0;
+                        });
                 
                     flavorsList.appendChild(opcionalesList);
                 }

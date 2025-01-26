@@ -119,6 +119,24 @@ body {
     text-align: center;
     }
     
+    .gustos-list {
+    list-style-type: none; /* Quitar el estilo de lista por defecto */
+    padding: 0; /* Quitar el padding por defecto */
+    margin: 0; /* Quitar el margen por defecto */
+    }
+    
+    .gusto-item {
+    text-align: left; /* Alinear el texto a la izquierda */
+    margin-bottom: 5px; /* Espacio entre elementos de la lista */
+    }
+    
+    .gusto-item::before {
+    content: "• "; /* Carácter de punto */
+    color: #d565d3; /* Color del punto */
+    font-size: 1.2em; /* Tamaño del punto */
+    margin-right: 5px; /* Espacio entre el punto y el texto */
+    }
+
     /* Media query para pantallas pequeñas */
     @media (max-width: 768px) {
     body {
